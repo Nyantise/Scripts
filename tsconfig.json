@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "bin",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "Node16",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "removeComments": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@/utils*": ["src/utils*"],
+    },
+  },
+  "include": ["src"],
+  "exclude": ["**/mapper.ts"]
+}
