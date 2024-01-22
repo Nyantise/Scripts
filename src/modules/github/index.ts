@@ -3,14 +3,27 @@ import { getModulesPath } from "@/utils/projectPath.js";
 import rofi from "@/utils/rofi.js";
 import { readdirSync } from "fs";
 
-const folder = await getModulesPath('/github')
-const contents = readdirSync(folder, {withFileTypes:true});
-let arr=[]
-for (let content of contents){
-    if(content.isFile() && content.name !== 'index.js'){
-        arr.push(content.name.replace('.js', ''))
-    }
+async function githubModule(){
+    const folder = await getModulesPath('/github');
+    const contents = readdirSync(folder, {withFileTypes:true});
+    let tempArr=[];
+    for (const content of contents){
+        if(content.isFile() &&
+        content.name !== 'index.js'&&
+        content.name.includes('.js')){
+            tempArr.push(content.name.replace('.js', ''));
+        }};
+
+    tempArr = tempArr.map((el:string)=>{
+        return el.split('_').map(word =>{
+            return word[0].toUpperCase()+word.slice(1)}).join(' ')});
+
+    const resp = await rofi(tempArr, {tip:"Options"});
+    if(!tempArr.includes(resp))return console.clear();
+
+    cmd(`node ${folder+'/'+resp.toLowerCase().replaceAll(' ', '_')}.js`);
+
+    console.clear();
 }
 
-const resp = await rofi(arr, {tip:"Options"});
-cmd(`node ${folder+'/'+resp}.js`);
+githubModule()
