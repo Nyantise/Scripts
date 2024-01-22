@@ -1,19 +1,24 @@
 import { exec } from 'child_process'
 import cmd from "@/utils/cmd-exec.js";
+import rofi, { cmdNotifiers, rofiMessage } from '@/utils/rofi.js';
 
-const visibility = await cmd(`echo "private\npublic" | rofi -normal-window -dmenu -p visibility`);
+const visibility = await rofi(['private', 'public'], {tip:"Visibility"})
 
-const fetching = exec(`rofi -e "fetching"`)
-const resp = await cmd('gh search repos --owner=Nyantise --visibility='+visibility.stdout)
-fetching.kill();
+const resp = await cmdNotifiers('gh search repos --owner=Nyantise --visibility='+visibility, {
+    before:"fetching..."
+})
 
 const list = resp.stdout.split('\n').map(el =>{
-    return el.split('\t')[0]
+    return el.split('\t')[0].replace('Nyantise/', '')
 });
 
 
-const repo = await cmd(`echo "${list.join('\n')}" | rofi -normal-window -dmenu`);
+const repo = await rofi(list, {tip: 'Repositories'})
 
-const cloning = exec(`rofi -e "cloning "`)
-await cmd(`gh repo clone ${repo.stdout}`)
-cloning.kill();
+await cmdNotifiers(`gh repo clone ${repo}`, {
+    before:"cloning...",
+    after:"done"
+})
+const actualPath = await cmd('pwd')
+
+cmd(`xdg-open ${actualPath.stdout}/${repo}`)

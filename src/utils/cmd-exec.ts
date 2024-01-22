@@ -12,6 +12,3 @@ export default async function cmd(cmd:string, debug:boolean = false, response:bo
         return error as ExecaError
     }
 }
-
-
-

@@ -1,6 +1,7 @@
 import { readdirSync } from "fs";
 import cmd from "./utils/cmd-exec.js";
 import { getProjectPath } from "./utils/projectPath.js";
+import rofi from "./utils/rofi.js";
 
 const folder = await getProjectPath('/bin/modules')
 const contents = readdirSync(folder, {withFileTypes:true});
@@ -12,6 +13,5 @@ for (let content of contents){
     }
 }
 
-const tip = 'modulos'
-const resp = await cmd(`echo "${arr.join('\n')}" | rofi -normal-window -dmenu -p ${tip}`);
-cmd(`node ${folder+'/'+resp.stdout+'/index.js'}`);
+const resp = await rofi(arr, {tip:"Modules"});
+cmd(`node ${folder+'/'+resp+'/index.js'}`);

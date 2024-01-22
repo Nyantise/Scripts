@@ -1,5 +1,6 @@
 import cmd from "@/utils/cmd-exec.js";
-import { getModulesPath, getProjectPath } from "@/utils/projectPath.js";
+import { getModulesPath } from "@/utils/projectPath.js";
+import rofi from "@/utils/rofi.js";
 import { readdirSync } from "fs";
 
 const folder = await getModulesPath('/github')
@@ -11,6 +12,5 @@ for (let content of contents){
     }
 }
 
-const tip = 'opcoes'
-const resp = await cmd(`echo "${arr.join('\n')}" | rofi -normal-window -dmenu -p ${tip}`);
-cmd(`node ${folder+'/'+resp.stdout}.js`);
+const resp = await rofi(arr, {tip:"Options"});
+cmd(`node ${folder+'/'+resp}.js`);
