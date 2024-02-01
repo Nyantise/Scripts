@@ -18,7 +18,7 @@ async function githubModule(){
         return el.split('_').map(word =>{
             return word[0].toUpperCase()+word.slice(1)}).join(' ')});
 
-    const resp = await rofi(tempArr, {tip:"Options"});
+    const resp = await rofi(tempArr, {tip:"Github"});
     if(!tempArr.includes(resp))return console.clear();
 
     cmd(`node ${folder+'/'+resp.toLowerCase().replaceAll(' ', '_')}.js`);

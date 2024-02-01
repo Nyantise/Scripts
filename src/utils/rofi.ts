@@ -1,16 +1,23 @@
 import { ChildProcess, exec } from "child_process";
 import cmd from "./cmd-exec.js";
 import { setTimeout } from "timers/promises";
+import getConfigObject from "./getConfigObject.js";
 
 export default async function rofi(list:string[], options?:{
     tip?:string,
+    custom?: string
 }){
-    const {tip} = options
-    const question = await cmd(
-        [`echo "${list.join('\n')}" |`,
+    const {file} = await getConfigObject();
+    if(file === undefined) throw "error";
+
+    const {tip, custom} = options
+    const question = await cmd([
+        `echo "${list.join('\n')}" |`,
         `rofi -dmenu`,
         `-p ${tip||'Options'}`,
-        `-config ~/.config/rofi/rofidmenu.rasi`].join(' '));
+        `-config ${file.rofiConfig}`,
+        `${custom}`
+    ].join(' '));
     return question.stdout
 }
 
@@ -19,7 +26,7 @@ export async function cmdNotifiers(command:string, loading?:{
         after?: string
     }) {
         const beforeMsg = loading.before ? 
-        rofiMessage(loading.before)
+        await rofiMessage(loading.before)
         : undefined;
         
         const resp = await cmd(command);
@@ -28,7 +35,7 @@ export async function cmdNotifiers(command:string, loading?:{
 
 
         const afterMsg = loading.after ? 
-        rofiMessage(loading.after)
+        await rofiMessage(loading.after)
         : undefined;
         if(afterMsg !== undefined){
             await setTimeout(1000);
@@ -37,6 +44,9 @@ export async function cmdNotifiers(command:string, loading?:{
         return resp
 }
 
-export function rofiMessage(message:string) {
-    return exec(`rofi -e "${message}" -config ~/.config/rofi/rofidmenu.rasi`)
+export async function rofiMessage(message:string) {
+    const {file} = await getConfigObject();
+    if(file === undefined) throw "error";
+
+    return exec(`rofi -e "${message}" -config ${file.rofiConfig}`)
 }

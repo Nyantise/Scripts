@@ -23,7 +23,10 @@ export default async function getConfigObject() {
 }
 
 
-type Config = {
+export type Config = {
     editorCommand: string,
-    githubNickname: string
+    githubNickname: string,
+    projectPaths: string[],
+    rofiConfig: string,
+    local: 'current' | "select"
 }
